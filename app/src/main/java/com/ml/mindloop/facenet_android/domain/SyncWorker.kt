@@ -1,6 +1,10 @@
 package com.ml.mindloop.facenet_android.domain
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.firestore.ktx.firestore
@@ -12,11 +16,11 @@ import org.koin.core.component.inject
 class SyncWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params), KoinComponent {
 
-    // Inyectamos el UseCase que tiene la lógica de la base de datos
     private val workLogUseCase: WorkLogUseCase by inject()
+    private val notificationManager =
+        appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     override suspend fun doWork(): Result {
-        // 1. Coger los logs pendientes de ObjectBox
         val pendingLogs = workLogUseCase.getUnsyncedLogs()
 
         if (pendingLogs.isEmpty()) {
@@ -26,25 +30,49 @@ class SyncWorker(appContext: Context, params: WorkerParameters) :
         val db = Firebase.firestore
         val batch = db.batch()
 
-        // 2. Añadir todos los logs pendientes a un "batch" de Firestore
         pendingLogs.forEach { log ->
-            // Creamos un nuevo documento con ID automático en la colección "work_logs"
             val docRef = db.collection("work_logs").document()
             batch.set(docRef, log)
         }
 
         return try {
-            // 3. Intentar subir el batch a la nube
             batch.commit().await()
-            
-            // 4. Si TODO salió bien, marcarlos como 'synced' en ObjectBox
             workLogUseCase.updateLogsAsSynced(pendingLogs)
-            
+
+            // ¡Mostrar notificación de éxito!
+            showSyncSuccessNotification(pendingLogs.size)
+
             Result.success()
         } catch (e: Exception) {
-            // Si algo falla (ej. se vuelve a caer el internet),
-            // WorkManager lo reintentará automáticamente más tarde
             Result.retry()
         }
+    }
+
+    private fun showSyncSuccessNotification(logCount: Int) {
+        val channelId = "sync_channel"
+        val channelName = "Sincronización de Datos"
+
+        // Crear canal de notificación para Android 8.0+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Notificaciones sobre la sincronización de datos con la nube"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(applicationContext, channelId)
+            .setContentTitle("Sincronización completada")
+            .setContentText("$logCount registros fueron subidos a la nube.")
+            .setSmallIcon(android.R.drawable.ic_menu_upload) // Icono estándar de Android
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
+
+        // Usamos un ID único para la notificación
+        notificationManager.notify(1, notification)
     }
 }
