@@ -37,7 +37,7 @@ class WorkLogUseCase : KoinComponent {
         return workLogBox.all.sortedByDescending { it.timestamp }
     }
     
-    // --- NUEVAS FUNCIONES PARA EL WORKER ---
+    // ---- NUEVAS FUNCIONES PARA EL WORKER ---
 
     internal fun getUnsyncedLogs(): List<WorkLog> {
         // Busca todos los logs donde 'synced' sea 'false'
