@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FaceNet-Android</string>
+
+    <!-- Main Screen -->
+    <string name="main_screen_title">Menú Principal</string>
+    <string name="main_screen_register_entry">Registrar Entrada</string>
+    <string name="main_screen_register_exit">Registrar Salida</string>
+    <string name="main_screen_database">Base de Datos</string>
+
+    <!-- Database Screen -->
+    <string name="database_screen_title">Base de Datos</string>
+    <string name="database_screen_workers">Trabajadores</string>
+    <string name="database_screen_history">Historial</string>
+
+</resources>
