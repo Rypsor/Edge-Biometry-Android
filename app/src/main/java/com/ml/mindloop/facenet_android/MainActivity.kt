@@ -17,68 +17,71 @@ import com.ml.mindloop.facenet_android.presentation.screens.detect_screen.Detect
 import com.ml.mindloop.facenet_android.presentation.screens.face_list.FaceListScreen
 import com.ml.mindloop.facenet_android.presentation.screens.history.HistoryScreen
 import com.ml.mindloop.facenet_android.presentation.screens.main_screen.MainScreen
+import com.ml.mindloop.facenet_android.presentation.theme.FaceNetAndroidTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navHostController = rememberNavController()
-            NavHost(
-                navController = navHostController,
-                startDestination = "main",
-                enterTransition = { fadeIn() },
-                exitTransition = { fadeOut() },
-            ) {
-                composable("main") {
-                    MainScreen(
-                        onRegisterEntryClick = { navHostController.navigate("detect/entrada") },
-                        onRegisterExitClick = { navHostController.navigate("detect/salida") },
-                        onDatabaseClick = { navHostController.navigate("database") }
-                    )
-                }
-                composable("database") {
-                    DatabaseScreen(
-                        onWorkersClick = { navHostController.navigate("face-list") },
-                        onHistoryClick = { navHostController.navigate("history") },
-                        onNavigateBack = { navHostController.navigateUp() }
-                    )
-                }
-                composable("history") {
-                    HistoryScreen { navHostController.navigateUp() }
-                }
-                composable(
-                    route = "add-face?personId={personId}",
-                    arguments = listOf(navArgument("personId") {
-                        type = NavType.LongType
-                        defaultValue = -1L
-                    })
-                ) { backStackEntry ->
-                    AddFaceScreen(
-                        navController = navHostController,
-                        onNavigateBack = { navHostController.navigateUp() },
-                        personId = backStackEntry.arguments?.getLong("personId") ?: -1L
-                    )
-                }
-                composable(
-                    route = "detect/{eventType}",
-                    arguments = listOf(navArgument("eventType") { type = NavType.StringType })
-                ) { backStackEntry ->
-                    val eventType = backStackEntry.arguments?.getString("eventType") ?: ""
-                    DetectScreen(
-                        eventType = eventType,
-                        onNavigateBack = { navHostController.navigateUp() },
-                        onOpenFaceListClick = { navHostController.navigate("face-list") }
-                    )
-                }
-                composable("face-list") {
-                    FaceListScreen(
-                        onNavigateBack = { navHostController.navigateUp() },
-                        onAddFaceClick = { navHostController.navigate("add-face") },
-                        onEditFaceClick = { personId ->
-                            navHostController.navigate("add-face?personId=$personId")
-                        }
-                    )
+            FaceNetAndroidTheme {
+                val navHostController = rememberNavController()
+                NavHost(
+                    navController = navHostController,
+                    startDestination = "main",
+                    enterTransition = { fadeIn() },
+                    exitTransition = { fadeOut() },
+                ) {
+                    composable("main") {
+                        MainScreen(
+                            onRegisterEntryClick = { navHostController.navigate("detect/entrada") },
+                            onRegisterExitClick = { navHostController.navigate("detect/salida") },
+                            onDatabaseClick = { navHostController.navigate("database") }
+                        )
+                    }
+                    composable("database") {
+                        DatabaseScreen(
+                            onWorkersClick = { navHostController.navigate("face-list") },
+                            onHistoryClick = { navHostController.navigate("history") },
+                            onNavigateBack = { navHostController.navigateUp() }
+                        )
+                    }
+                    composable("history") {
+                        HistoryScreen { navHostController.navigateUp() }
+                    }
+                    composable(
+                        route = "add-face?personId={personId}",
+                        arguments = listOf(navArgument("personId") {
+                            type = NavType.LongType
+                            defaultValue = -1L
+                        })
+                    ) { backStackEntry ->
+                        AddFaceScreen(
+                            navController = navHostController,
+                            onNavigateBack = { navHostController.navigateUp() },
+                            personId = backStackEntry.arguments?.getLong("personId") ?: -1L
+                        )
+                    }
+                    composable(
+                        route = "detect/{eventType}",
+                        arguments = listOf(navArgument("eventType") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val eventType = backStackEntry.arguments?.getString("eventType") ?: ""
+                        DetectScreen(
+                            eventType = eventType,
+                            onNavigateBack = { navHostController.navigateUp() },
+                            onOpenFaceListClick = { navHostController.navigate("face-list") }
+                        )
+                    }
+                    composable("face-list") {
+                        FaceListScreen(
+                            onNavigateBack = { navHostController.navigateUp() },
+                            onAddFaceClick = { navHostController.navigate("add-face") },
+                            onEditFaceClick = { personId ->
+                                navHostController.navigate("add-face?personId=$personId")
+                            }
+                        )
+                    }
                 }
             }
         }
