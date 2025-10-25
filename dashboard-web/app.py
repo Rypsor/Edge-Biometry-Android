@@ -13,7 +13,7 @@ if not firebase_admin._apps:
             cred = credentials.Certificate(cred_path)
             st.sidebar.success("Credencial local cargada 🔑", icon="🔑")
         else:
-            cred_dict = st.secrets["firebase_service_account"]
+            cred_dict = st.secrets["s"]
             cred = credentials.Certificate(cred_dict)
             st.sidebar.success("Credencial de nube cargada ☁️", icon="☁️")
             
