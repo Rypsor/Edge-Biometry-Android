@@ -64,9 +64,38 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "3:2377570159656307184",
+      "lastPropertyId": "4:1522560421150792135",
+      "name": "WorkLog",
+      "properties": [
+        {
+          "id": "1:5133891257224700316",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2653544152856635392",
+          "name": "workerName",
+          "type": 9
+        },
+        {
+          "id": "3:523134881077444603",
+          "name": "eventType",
+          "type": 9
+        },
+        {
+          "id": "4:1522560421150792135",
+          "name": "timestamp",
+          "type": 10
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "2:5724033975412775664",
+  "lastEntityId": "3:2377570159656307184",
   "lastIndexId": "2:1210613089703466990",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
